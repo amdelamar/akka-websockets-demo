@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="pragma" content="no-cache" />
+
+    <meta name="author" content="Austin Delamar"/>
+    <meta name="twitter:creator" content="@amdelamar"/>
+
+    <title>Akka Chatroom</title>
+    <script type="text/javascript">
+        let ws = null;
+
+        function main() {
+            let chatbox = document.getElementById("chatbox");
+            chatbox.value = "Welcome."
+
+            let name = prompt("Enter your name!")
+            if (name === null) {
+                name = "Anonymous"
+            }
+
+            ws = new WebSocket("ws://localhost:8080/api/chat?name=" + encodeURIComponent(name));
+            ws.onmessage = function(event) {
+                chatbox.value = chatbox.value + "\n" + event.data
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        }
+
+        function sendInput() {
+            let input = document.getElementById("inputbox");
+            ws.send(input.value)
+            input.value = ""
+        }
+    </script>
+    <style>
+        html, body, p {
+            background: #272822;
+            color: #f8f8f2;
+        }
+        html, body, p, textarea, input {
+            font-size: 12pt;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+        textarea, input {
+            background: #f8f8f2;
+            color: #272822;
+        }
+    </style>
+</head>
+<body onload="main()" style="padding:50px;">
+    <p>A chatroom built with Scala Akka Websockets.</p>
+    <div>
+        <textarea id="chatbox" readonly style="width:500px;height:150px;"></textarea>
+    </div>
+    <form action="javascript:sendInput()" autocomplete="off">
+        <input type="text" id="inputbox" value="" placeholder="Say something..." style="width:420px;" />
+        <input type="submit" value="Send"/>
+    </form>
+</body>
+</html>
