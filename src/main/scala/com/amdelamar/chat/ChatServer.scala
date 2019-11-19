@@ -1,16 +1,20 @@
 package com.amdelamar.chat
 
+import java.util.concurrent.Executors
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 
+import scala.concurrent.ExecutionContext
+
 object ChatServer {
 
   implicit val system = ActorSystem("app")
   implicit val materializer = ActorMaterializer()
-  implicit val executionContext = system.dispatcher
+  implicit val executionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(16))
 
   private val chatroom = new ChatRoom()
 
