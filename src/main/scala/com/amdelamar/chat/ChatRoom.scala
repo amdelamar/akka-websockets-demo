@@ -6,11 +6,9 @@ import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import akka.stream.{Materializer, OverflowStrategy}
 import com.amdelamar.chat.ChatMessages.{UserJoined, UserLeft, UserSaid}
 import org.reactivestreams.Publisher
-
-import scala.collection.mutable.Map
+import scala.collection.mutable
 
 class ChatRoom()(implicit system: ActorSystem, mat: Materializer) {
-
   private val roomActor = system.actorOf(Props(classOf[ChatRoomActor]))
 
   def websocketFlow(name: String): Flow[Message, Message, Any] = {
@@ -19,28 +17,27 @@ class ChatRoom()(implicit system: ActorSystem, mat: Materializer) {
         .map(msg => TextMessage.Strict(msg))
         .toMat(Sink.asPublisher(false))(Keep.both).run()
 
-    // announce the user has joined
+    // Announce the user has joined
     roomActor ! UserJoined(name, actorRef)
 
     val sink: Sink[Message, Any] = Flow[Message]
       .map {
         case TextMessage.Strict(msg) =>
-          // incoming message from ws
+          // Incoming message from ws
           roomActor ! UserSaid(name, msg)
       }
       .to(Sink.onComplete( _ =>
-        // announce the user has left
+        // Announce the user has left
         roomActor ! UserLeft(name)
       ))
 
-    // pair sink and source
+    // Pair sink and source
     Flow.fromSinkAndSource(sink, Source.fromPublisher(publisher))
   }
 }
 
 class ChatRoomActor() extends Actor {
-
-  val users: Map[String, ActorRef] = Map.empty[String, ActorRef]
+  val users: mutable.Map[String, ActorRef] = mutable.Map.empty[String, ActorRef]
 
   override def receive: Receive = {
     case UserJoined(name, actorRef) =>
@@ -58,10 +55,8 @@ class ChatRoomActor() extends Actor {
       broadcast(s"$name: $msg")
   }
 
-  def broadcast(msg: String): Unit = {
-    // send message to other users
+  /** Broadcast the message to all other users */
+  def broadcast(msg: String): Unit =
     users.values.foreach(_ ! msg)
-  }
-
 }
 
