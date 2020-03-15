@@ -1,20 +1,18 @@
 package com.amdelamar.chat
 
 import java.util.concurrent.Executors
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
-
-import scala.concurrent.ExecutionContext
+import akka.stream.Materializer
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 object ChatServer {
-
-  implicit val system = ActorSystem("app")
-  implicit val materializer = ActorMaterializer()
-  implicit val executionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(16))
+  implicit val system: ActorSystem = ActorSystem("app")
+  implicit val materializer: Materializer = Materializer.matFromSystem
+  implicit val executionContext: ExecutionContextExecutor =
+    ExecutionContext.fromExecutor(Executors.newFixedThreadPool(16))
 
   private val chatroom = new ChatRoom()
 
@@ -39,5 +37,4 @@ object ChatServer {
         println(s"Server is running at http://localhost:8080/")
       }
   }
-
 }

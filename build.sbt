@@ -1,11 +1,8 @@
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-http"   % "10.1.11" withSources(),
+  "com.typesafe.akka" %% "akka-stream" % "2.6.1"   withSources()
+)
 name := "akka-websockets-demo"
 organization := "com.amdelamar"
-version := "1.0"
-scalaVersion := "2.12.8"
-
-libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-http" % "10.1.8",
-  "com.typesafe.akka" %% "akka-stream" % "2.5.19"
-)
-
-lazy val root = (project in file("."))
+scalaVersion := "2.13.1"
+version := "1.1"

@@ -17,24 +17,24 @@
 
         function main() {
             let chatbox = document.getElementById("chatbox");
-            chatbox.value = "Welcome."
+            chatbox.value = "Welcome.";
 
-            let name = prompt("Enter your name!")
+            let name = prompt("Enter your name!");
             if (name === null) {
                 name = "Anonymous"
             }
 
-            ws = new WebSocket("ws://localhost:8080/api/chat?name=" + encodeURIComponent(name));
+            ws = new WebSocket("ws://" + location.host + "/api/chat?name=" + encodeURIComponent(name));
             ws.onmessage = function(event) {
-                chatbox.value = chatbox.value + "\n" + event.data
+                chatbox.value = chatbox.value + "\n" + event.data;
                 chatbox.scrollTop = chatbox.scrollHeight;
             }
         }
 
         function sendInput() {
             let input = document.getElementById("inputbox");
-            ws.send(input.value)
-            input.value = ""
+            ws.send(input.value);
+            input.value = "";
         }
     </script>
     <style>
